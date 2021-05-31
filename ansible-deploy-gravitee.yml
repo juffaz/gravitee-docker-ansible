@@ -1,0 +1,50 @@
+-
+  name: Install and configure gravitee.io
+  hosts: gateway
+  gather_facts: yes
+  serial: 1
+
+  tasks:
+    - name: Create gravitee docker-compose directory /root/gravitee.io
+      file:
+        path: /root/gravitee.io
+        state: directory
+
+    - name: Copy file  JKS
+      copy:
+        src: ./files/{{ jks_file }}
+        dest: /root/gravitee.io/{{ jks_file }}
+
+    - name: Copy file  PFX
+      copy:
+        src: ./files/{{ pfx_file }}
+        dest: /root/gravitee.io/{{ pfx_file }}
+
+    - name: Copy file common.yml
+      template:
+        src: ./templates/common.yml.j2
+        dest: /root/gravitee.io/common.yml
+
+    - name: Copy file docker-compose-local.yml
+      template:
+        src: ./templates/docker-compose-local.yml.j2
+        dest: /root/gravitee.io/docker-compose-local.yml
+
+    - name: Up Docker Compose
+      shell: /usr/local/bin/docker-compose -f /root/gravitee.io/docker-compose-local.yml up -d
+
+    - name: waiting
+      wait_for:
+         timeout: 30
+         host: "{{ ansible_host }}"
+         port: 80
+      delegate_to: localhost
+
+    #- pause:
+        #prompt: "waiting for {{ansible_hostname}} "
+        #seconds: 5
+
+    - name: Docker-compose up gravitee.io
+      shell: docker-compose -f /root/gravitee.io/docker-compose-local.yml up -d
+
+    #docker-compose -f /root/gravitee.io/docker-compose-local.yml up -d
