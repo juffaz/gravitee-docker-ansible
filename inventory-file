@@ -7,7 +7,8 @@ ansible_become_user=root
 ansible_connection=ssh
 env="prod"
 
-host1="hosts:127.0.0.2"
+test-host1="hosts1:127.0.0.2"
+test-host2="hosts2:127.0.0.3"
 
 ldap_username=CN=gravitee,OU=Service Accounts,OU=Bank,DC=Test,DC=com
 ldap_password=test_password
