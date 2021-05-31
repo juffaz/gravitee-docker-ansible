@@ -34,7 +34,7 @@ apigw_domain_name="api.test.com:8005"
 apigw_container_nameip=
 
 [gateway]
-apigw01prod                      ansible_host=10.23.12.28
-apigw02prod                      ansible_host=10.23.12.29
-apigw03prod                      ansible_host=10.23.12.44
+apigw01                      ansible_host=10.2.1.28
+apigw02                      ansible_host=10.2.1.29
+apigw03                      ansible_host=10.2.1.44
 
