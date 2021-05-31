@@ -1,0 +1,39 @@
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_become=yes
+ansible_become_method=sudo
+ansible_user=devops
+ansible_become_user=root
+ansible_connection=ssh
+env="prod"
+
+host1="hosts:127.0.0.2"
+
+ldap_username=CN=gravitee,OU=Service Accounts,OU=Bank,DC=Test,DC=com
+ldap_password=test_password
+ldap_url=ldap://192.168.1.11:389
+
+consul_cluster=consul.service.consul
+consul_slug=consul
+apigw_mongo="192.168.1.21:27017,192.168.1.22:27017,192.168.1.23:27017,192.168.1.24:27017"
+resolv=prod-resolv
+jks_file=prod-keystore.jks
+pfx_file=mkr.pfx
+gitlab_url="gitlab.com"
+elastic_ip="elastic-cluster.service.consul"
+mongo1="192.168.1.21"
+mongo2="192.168.1.22"
+mongo3="192.168.1.23"
+mongo4="192.168.1.24"
+mem_limit="6g"
+GIO_MIN_MEM="5g"
+GIO_MAX_MEM="6g"
+
+apigw_domain_name="api.test.com:8005"
+apigw_container_nameip=
+
+[gateway]
+apigw01prod                      ansible_host=10.23.12.28
+apigw02prod                      ansible_host=10.23.12.29
+apigw03prod                      ansible_host=10.23.12.44
+
