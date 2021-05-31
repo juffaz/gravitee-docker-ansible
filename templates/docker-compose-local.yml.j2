@@ -1,0 +1,67 @@
+version: '2'
+
+
+services:
+  local_gateway:
+    extends:
+      file: common.yml
+      service: gateway
+    ports:
+      - "80:8082"
+    volumes:
+      - ./logs/gateway:/etc/gravitee.io/log
+    environment:
+      - gravitee_management_mongodb_uri=mongodb://{{ apigw_mongo }}/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_ratelimit_mongodb_uri=mongodb://{{ apigw_mongo }}/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_reporters_elasticsearch_endpoints_0=http://{{ elastic_ip }}:9200
+    networks:
+        gravitee:
+
+  local_managementui:
+    extends:
+      file: common.yml
+      service: managementui
+    ports:
+      - "8002:80"
+    volumes:
+      - ./logs/management-ui:/var/log/httpd
+    environment:
+      - MGMT_API_URL=http:\/\/{{ apigw_domain_name }}\/management\/
+    networks:
+        gravitee:
+
+  local_managementapi:
+    extends:
+      file: common.yml
+      service: managementapi
+    ports:
+      - "8005:8083"
+    volumes:
+      - ./logs/management-api:/home/gravitee/logs
+    environment:
+      - gravitee_management_mongodb_uri=mongodb://{{ apigw_mongo }}/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_analytics_elasticsearch_endpoints_0=http://{{ elastic_ip }}:9200
+      - gravitee_security_providers_1_type=ldap
+      - gravitee_security_providers_1_context_username={{ ldap_username }}
+      - gravitee_security_providers_1_context_password={{ ldap_password }}
+      - gravitee_security_providers_1_context_url={{ ldap_url }}
+      - gravitee_security_providers_1_context_base=DC=Test,DC=com
+      - gravitee_security_providers_1_authentication_user_base=OU=Test
+      - gravitee_security_providers_1_authentication_user_filter=(&(objectCategory=user)(sAMAccountName={0}))
+      - gravitee_security_providers_1_authentication_group_base=OU=Bank
+      - gravitee_security_providers_1_authentication_group_role_attribute=cn
+      - gravitee_security_providers_1_authentication_group_role_mapper_GRAVITEE_ADMINS=ADMIN
+      - gravitee_security_providers_1_authentication_group_role_mapper_GRAVITEE_USERS=USER
+      - gravitee_security_providers_1_authentication_group_role_mapper_GRAVITEE_CONSUMERS=API_CONSUMER
+      - gravitee_security_providers_1_lookup_user_base=OU=Test
+      - gravitee_security_providers[0]_users[1]_username=admin
+      - gravitee_security_providers[0]_users[1]_password=$$2a$$130$$p.ddddGz5ldd0pXh7CeAya3d9eYlurioekky5KRqrEYxqVMd/MMdL5fU6iBb6
+    networks:
+        gravitee:
+
+networks:
+    gravitee:
+          ipam:
+             driver: default
+             config:
+                 - subnet: 172.89.0.0/24
